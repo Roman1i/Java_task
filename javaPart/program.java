@@ -15,6 +15,7 @@ public class program {
                     break;
                 case 4:
                     flag = false;
+                    break;
                 default:
                     System.out.println("Выберите существующий пункт!");
             }

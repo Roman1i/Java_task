@@ -1,8 +1,10 @@
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class Toy {
 
     private static ArrayList<Toy> pool = new ArrayList<>();
+    private static ArrayList<String> names = new ArrayList<>();
     private static int ids = 0;
 
     private int id;
@@ -12,33 +14,49 @@ public class Toy {
 
 
     // Перегрузка 
-    public Toy(String name, int amount) {
-        if (isInPool(name)){
-            for (Toy toy : pool) {
-                if (toy.name.equals(name)){
-                    toy.amount += amount;
-                }
-            }
-        } else {
-            this.id = ids++;
-            this.name = name;
-            this.amount = amount;
-            pool.add(this);  
-        }
+    public Toy(String name) {
+        this.id = ids++;
+        this.name = name;
+        pool.add(this);
+        if (!isInPool(name))
+            names.add(name);
         
-        // Перерасчет процентов при добавлении новых элементов
-        int total = 0;
+        refresher();
+    }
+
+
+    //Вывод игрушки по id
+    public static void printToy(int id) {
+        Toy t = pool.get(id);
+        System.out.println("\tВаш выигрыш:");
+        System.out.println(t.id + " " + t.name + " " + t.rate + " %");
+    }
+
+
+    // Перерасчет процентов
+    private static void refresher() {
         for (Toy toy : pool) {
-            total += toy.amount;
-        }
-        for (Toy toy : pool) {
-            toy.rate = 100.0 / total * toy.amount;
+            toy.rate = 100.0 / pool.size();
         }
     }
 
+
+    //Удаление игрушки по id
+    public static void removeToy(int id) {
+        pool.remove(id);
+        refresher();
+    }
+
+
+    //Колличество игрушек
+    public static int amountOfToys() {
+        return pool.size();
+    }
+
+
     private static boolean isInPool(String name) {
-        for (Toy toy : pool) {
-            if (toy.name.equals(name)) return true;
+        for (String toyName : names) {
+            if (toyName.equals(name)) return true;
         }
         return false;
     }
@@ -46,11 +64,18 @@ public class Toy {
 
     // Статистика
     public static void poolInfo() {
-        for (Toy toy : pool) {
-            System.out.print(toy.id + " ");
-            System.out.print(toy.name + " ");
-            System.out.print(toy.amount + " ");
-            System.out.println(toy.rate + "%");
+        for (String toyName : names) {
+            System.out.print(toyName + " ");
+            double percent = 0;
+            int amount = 0;
+            for (Toy toy2 : pool) {
+                if(toyName.equals(toy2.name)) {
+                    percent += toy2.rate;
+                    amount++;
+                }
+            }
+            System.out.print(amount + " ");
+            System.out.println(percent + " %");
         }
     }
 }
